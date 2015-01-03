@@ -6,4 +6,4 @@
 #SBATCH -p testing
 #SBATCH --exclusive
 
-./mmm 1000
+./mmm 500

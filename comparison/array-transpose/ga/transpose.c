@@ -2,6 +2,7 @@
  * transpose of 1-d array.
  * E,g: (1 2 3 4 5 6 7 8 9 10) => (10 9 8 7 6 5 4 3 2 1)
  */
+
 #define   TOTALELEMS   1000
 #define   MAXPROC      128
 
@@ -41,7 +42,6 @@ void TRANSPOSE1D() {
 	/* initialize data in g_a */
 	if (me==0) {
 	   for(i=0; i<dims[0]; i++) a[i] = i;
-
 	   lo[0]  = 0;
 	   hi[0] = dims[0]-1;
 	   NGA_Put(g_a, lo, hi, a, ld);
@@ -100,7 +100,7 @@ int main(int argc, char **argv) {
     }
      
 	start = MPI_Wtime();
-	for(i =0; i< 100; i++) {
+	for(i =0; i< 1000; i++) {
 		TRANSPOSE1D();
 	}
 	end = MPI_Wtime();

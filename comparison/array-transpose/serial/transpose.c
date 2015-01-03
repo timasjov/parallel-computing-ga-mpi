@@ -6,7 +6,7 @@
 #include <time.h>
 
 int main() {
-   int n = 100000;
+   int n = 1280000;
    int i, c, d, a[n], b[n];
    clock_t start, end;
 

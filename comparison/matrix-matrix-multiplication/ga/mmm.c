@@ -1,8 +1,3 @@
-/**
- * Multiplication of two square matrices with randomly generated
- * contents
- */
-
 #define   NDIM         2
 #define   TOTALELEMS   500
 
@@ -16,7 +11,6 @@
 double a[TOTALELEMS][TOTALELEMS], b[TOTALELEMS][TOTALELEMS];
 double c[TOTALELEMS][TOTALELEMS], btrns[TOTALELEMS][TOTALELEMS];
 
-void verify(int g_a, int g_b, int g_c, int *lo, int *hi, int *ld);
 void matrix_multiply() {
     
     int dims[NDIM], chunk[NDIM], ld[NDIM];
@@ -39,15 +33,12 @@ void matrix_multiply() {
     /* Create a global array g_a and duplicate it to get g_b and g_c*/
     g_a = NGA_Create(C_DBL, NDIM, dims, "array A", chunk);
     if (!g_a) GA_Error("create failed: A", NDIM);
-    if (me==0) printf("  Created Array A\n");
     
     g_b = GA_Duplicate(g_a, "array B");
     g_c = GA_Duplicate(g_a, "array C");
     if (!g_b || !g_c) GA_Error("duplicate failed",NDIM);
-    if (me==0) printf("  Created Arrays B and C\n");
  
     /* Initialize data in matrices a and b */
-    if(me==0)printf("  Initializing matrix A and B\n");
     for(i=0; i<dims[0]; i++) {
        for(j=0; j<dims[1]; j++) {
           a[i][j] = i+j;
@@ -55,7 +46,6 @@ void matrix_multiply() {
        }
     }
 
-    start = MPI_Wtime();
     /*  Copy data to global arrays g_a and g_b */
     lo1[0] = 0;
     lo1[1] = 0;
@@ -107,11 +97,6 @@ void matrix_multiply() {
 
     /* Synchronize all processors to make sure inversion is complete */
     GA_Sync();
-
-    end = MPI_Wtime();
-    if(me==0) printf("  Time=%2.5e secs\n\n",end-start); 
-
-    /* verify(g_a, g_b, g_c, lo1, hi1, ld); */
     
     /* Deallocate arrays */
     GA_Destroy(g_a);
@@ -119,40 +104,10 @@ void matrix_multiply() {
     GA_Destroy(g_c);
 }
 
-#define TOLERANCE 0.1
-void verify(int g_a, int g_b, int g_c, int *lo, int *hi, int *ld) {
-
-    double rchk, alpha=1.0, beta=0.0;
-    int g_chk, me=GA_Nodeid();
-
-    g_chk = GA_Duplicate(g_a, "array Check");
-    if(!g_chk) GA_Error("duplicate failed",NDIM);
-    GA_Sync();
-
-    GA_Dgemm('n', 'n', TOTALELEMS, TOTALELEMS, TOTALELEMS, 1.0, g_a,
-             g_b, 0.0, g_chk);
-
-    GA_Sync();
-    
-    alpha=1.0, beta=-1.0;
-    GA_Add(&alpha, g_c, &beta, g_chk, g_chk);
-    rchk = GA_Ddot(g_chk, g_chk);
-    
-    if (me==0) {
-       printf("Normed difference in matrices: %12.4e\n", rchk);
-       if(rchk < -TOLERANCE || rchk > TOLERANCE)
-          GA_Error("Matrix multiply verify failed",0);
-       else
-          printf("Matrix Mutiply OK\n");
-    }
-    
-    GA_Destroy(g_chk);
-}
-
-
 int main(int argc, char **argv) {
     int heap=3000000, stack=3000000;
-    int me, nprocs;
+    int me, nprocs, i;
+    double start, end;
     
     /* Initialize MPI */
     MPI_Init(&argc, &argv);   
@@ -168,8 +123,13 @@ int main(int argc, char **argv) {
     if(me==0) {
        printf("\nUsing %d processes\n\n", nprocs); fflush(stdout);
     }
- 
-   matrix_multiply();
+
+    start = MPI_Wtime();
+    for(i =0; i< 1000; i++) {
+    	matrix_multiply();
+    }
+    end = MPI_Wtime();
+    if(me==0) printf("  Time=%2.5e secs\n\n",end-start); 
     
     if(me==0)printf("\nTerminating ..\n");
     GA_Terminate();    

@@ -7,7 +7,8 @@
 #SBATCH --threads-per-core=1
 #SBATCH -p testing 
 #SBATCH --exclusive
+#SBATCH --mem 20000
 
 export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so
 
-srun -n 10 ./mmm
+srun -n 20 ./mmm
