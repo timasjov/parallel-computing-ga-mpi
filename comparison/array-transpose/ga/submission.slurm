@@ -11,4 +11,4 @@
 
 export I_MPI_PMI_LIBRARY=/usr/lib64/libpmi.so
 
-mpirun -n 20 transp1D-c.x
+mpirun -n 10 transpose.x

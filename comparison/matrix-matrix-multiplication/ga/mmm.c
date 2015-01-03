@@ -4,7 +4,7 @@
  */
 
 #define   NDIM         2
-#define   TOTALELEMS   5000
+#define   TOTALELEMS   500
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,6 +24,7 @@ void matrix_multiply() {
     int lo2[NDIM], hi2[NDIM], lo3[NDIM], hi3[NDIM];
     int g_a, g_b, g_c;
     int i, j, k;
+    double start, end;
 
     /* Find local processor ID and the number of processors */
     int me=GA_Nodeid(), nprocs=GA_Nnodes();
@@ -54,6 +55,7 @@ void matrix_multiply() {
        }
     }
 
+    start = MPI_Wtime();
     /*  Copy data to global arrays g_a and g_b */
     lo1[0] = 0;
     lo1[1] = 0;
@@ -103,7 +105,13 @@ void matrix_multiply() {
     /* Copy c back to g_c */
     NGA_Put(g_c, lo, hi, c, ld);
 
-    verify(g_a, g_b, g_c, lo1, hi1, ld);
+    /* Synchronize all processors to make sure inversion is complete */
+    GA_Sync();
+
+    end = MPI_Wtime();
+    if(me==0) printf("  Time=%2.5e secs\n\n",end-start); 
+
+    /* verify(g_a, g_b, g_c, lo1, hi1, ld); */
     
     /* Deallocate arrays */
     GA_Destroy(g_a);
@@ -111,9 +119,6 @@ void matrix_multiply() {
     GA_Destroy(g_c);
 }
 
-/*
- * Check to see if inversion is correct.
- */
 #define TOLERANCE 0.1
 void verify(int g_a, int g_b, int g_c, int *lo, int *hi, int *ld) {
 

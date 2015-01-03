@@ -3,7 +3,6 @@
  * contents
  */
 
-
 #include "mpi.h"
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +11,6 @@
 #define MASTER 0               /* taskid of first task */
 #define FROM_MASTER 1          /* setting a message type */
 #define FROM_WORKER 2          /* setting a message type */
-
 
 int main (int argc, char *argv[])
 {
@@ -25,10 +23,9 @@ int	numtasks,              /* number of tasks in partition */
 	rows,                  /* rows of matrix A sent to each worker */
 	averow, extra, offset, /* used to determine rows sent to each worker */
 	i, j, k, rc;           /* misc */
-double	a[N][N],           /* matrix A to be multiplied */
-	b[N][N],           /* matrix B to be multiplied */
-	c[N][N];           /* result matrix C */
-MPI_Status status;
+	double	a[N][N], b[N][N], c[N][N];
+        MPI_Status status;
+	double start, end;
 
 MPI_Init(&argc,&argv);
 MPI_Comm_rank(MPI_COMM_WORLD,&taskid);
@@ -51,6 +48,7 @@ numworkers = numtasks-1;
          for (j=0; j<N; j++)
             b[i][j]= i*j;
 
+      start = MPI_Wtime();
       /* Send matrix data to the worker tasks */
       averow = N/numworkers;
       extra = N%numworkers;
@@ -100,5 +98,9 @@ numworkers = numtasks-1;
       MPI_Send(&rows, 1, MPI_INT, MASTER, mtype, MPI_COMM_WORLD);
       MPI_Send(&c, rows*N, MPI_DOUBLE, MASTER, mtype, MPI_COMM_WORLD);
    }
+
+   end = MPI_Wtime();
+   if(taskid == MASTER) printf("  Time=%2.5e secs\n\n",end-start); 
    MPI_Finalize();
+
 }

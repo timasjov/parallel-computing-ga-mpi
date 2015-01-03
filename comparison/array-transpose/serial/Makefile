@@ -1,8 +1,8 @@
 COMPILER = gcc
-FLAGS = -O2 -fopenmp
+FLAGS =
 SOURCES =  transpose.c
 
-qs: transpose 
+all: transpose 
 	${COMPILER} -g -o transpose $(FLAGS) $(SOURCES)
 
 clean:

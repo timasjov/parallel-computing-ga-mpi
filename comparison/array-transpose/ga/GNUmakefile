@@ -1,6 +1,8 @@
 # As of ga-5-1, the variables needed to build GA are determined from the
 # ga-config script which is installed with GA.
 
+# make sure you have loaded => openmpi-1.7.3
+
 ifndef GA_CONFIG
 error:
 	echo "you must set GA_CONFIG e.g. GA_CONFIG=/path/to/ga-config"
@@ -25,7 +27,7 @@ CPPFLAGS += -DUSE_MPI -DMPI
 LINK = $(F77)
 LOADER_OPTS = -g
 
-PROGRAMS = transp1D-c.x
+PROGRAMS = transpose.x
 
 .PHONY: all
 all: $(PROGRAMS)
@@ -34,9 +36,6 @@ all: $(PROGRAMS)
 
 .c.o:
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c -o $@ $<
-
-.F.o:
-	$(F77) $(FFLAGS) $(CPPFLAGS) -c -o $@ $<
 
 .o.x:
 	$(LINK) $(LOADER_OPTS) $(LDFLAGS) -o $@ $< $(LIBS)

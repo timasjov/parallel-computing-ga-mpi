@@ -1,3 +1,5 @@
+# make sure you have loaded => intel_cluster_studio/2013.1.046
+
 COMPILER = mpicc
 OPTFLAGS = -O3
 CFLAGS = $(OPTFLAGS) -g

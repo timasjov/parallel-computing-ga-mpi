@@ -4,7 +4,7 @@ program matrixmul
 
   integer, parameter :: RK = selected_real_kind(10,2)
   real(kind=RK), parameter :: PRECISION = 1E-8
-  integer :: N=10
+  integer :: N=100
   real(kind=RK),pointer :: A(:,:), B(:,:), C(:,:), Z(:,:)
 
   type(timing_t) :: timing

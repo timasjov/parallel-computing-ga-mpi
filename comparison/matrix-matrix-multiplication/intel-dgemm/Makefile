@@ -1,4 +1,5 @@
-# first, load => intel_cluster_studio/2013.1.046
+# make sure you have loaded => intel_cluster_studio/2013.1.046
+
 # values for Gnu Fortran
 FC=gfortran
 FCFLAGS=-O3 -g -funroll-loops
